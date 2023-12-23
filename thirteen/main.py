@@ -35,7 +35,6 @@ class Card():
 class Deck():
     def __init__(self):
         self.deck = []
-        self.prime()
         
     def suffle(self):
         np.random.shuffle(self.deck)
@@ -65,39 +64,62 @@ class Hand():
 
     def prime(self):
         self.hand = []
-        for i in range(0,13):
+        for _ in range(0,13):
             self.hand.append(self.deck.give_hand())
         self.sort()
 
-
-
-
-
+    def __str__(self):
+        str = '{'
+        for card in self.hand:
+            str += card.__str__() + ', '
+        return str + '}\n'
+    
+    def __repr__(self):
+        str = ''
+        for card in self.hand:
+            str += card
+        return str
 
 class Game():
 
     def __init__(self):
-        pygame.init()
-        pygame.font.init()
-        pygame.display.set_caption(WINDOW_NAME)
         self.screen = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
         self.font = pygame.font.Font(FONT, FONT_SIZE)
         self.clock = pygame.time.Clock()
         self.running = True
         self.set_screen()
 
+        self.deck = Deck()
+        self.deck.prime()
+        self.hand1 = Hand(self.deck)
+        self.hand2 = Hand(self.deck)
+        self.hand3 = Hand(self.deck)
+        self.hand4 = Hand(self.deck)
+
+
+
+
     def set_screen(self):
-        pygame.display.set_caption(WINDOW_NAME)
         self.screen.fill(SCREEN_BG)
+
+    def display_hand(self):
+        # Draw cards onto screen
+        pass
 
 
 #MAIN LOOP|||||||||||||||||||
 
 def main():
+
+    pygame.init()
+    pygame.font.init()
+    pygame.display.set_caption(WINDOW_NAME)
+
     game = Game()
-    deck = Deck()
-    Player1 = Hand(deck)
-    print(Player1.hand)
+    print(game.hand1)
+    print(game.hand2)
+    print(game.hand3)
+    print(game.hand4)
 
     while game.running:
         for event in pygame.event.get():
