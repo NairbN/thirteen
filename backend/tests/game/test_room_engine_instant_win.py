@@ -66,3 +66,4 @@ def test_begin_first_game_finishes_immediately_on_instant_win(monkeypatch) -> No
     assert room.seats[bob.seat_index].placement == 2
     assert room.seats[host.seat_index].score == 2  # 2-player 1st place value
     assert room.previous_winner == host.seat_index
+    assert room.last_finish_reason == "instant_win"

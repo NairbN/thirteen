@@ -92,6 +92,33 @@ def test_handle_play_transitions_to_finished_when_one_seat_remains() -> None:
     assert room.previous_winner == 0
 
 
+def test_finish_reason_normal_on_natural_end() -> None:
+    room, host = create_room(username="a", icon="1")
+    join_room(room, username="b", icon="2")
+    room.state = RoomState.IN_PROGRESS
+    room.game = Game(
+        phase=GamePhase.AWAITING_LEAD,
+        current_seat=0,
+        is_first_lead=True,
+        lowest_card_in_play=parse_card("3S"),
+    )
+    room.seats[0].hand = [parse_card("3S")]
+    room.seats[1].hand = [parse_card("4S")]
+    handle_play(room, 0, [parse_card("3S")])
+    assert room.last_finish_reason == "normal"
+
+
+def test_finish_reason_players_left_on_forfeit_end() -> None:
+    room, host = create_room(username="a", icon="1")
+    join_room(room, username="b", icon="2")
+    room.state = RoomState.IN_PROGRESS
+    room.game = Game(phase=GamePhase.AWAITING_LEAD, current_seat=0)
+    room.seats[0].hand = [parse_card("3S")]
+    room.seats[1].hand = [parse_card("4S")]
+    forfeit_seat(room, 0)
+    assert room.last_finish_reason == "players_left"
+
+
 def test_handle_pass_rejects_wrong_state() -> None:
     room, host = create_room(username="a", icon="1")
     with pytest.raises(GameError) as exc:

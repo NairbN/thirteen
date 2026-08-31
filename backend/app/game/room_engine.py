@@ -211,9 +211,10 @@ def _finish_instant_win(room: Room, winner_seat: int) -> None:
         seat.is_ready = False
         seat.rematch_vote = RematchVote.NONE
     room.state = RoomState.FINISHED
+    room.last_finish_reason = "instant_win"
 
 
-def _finish_normal(room: Room) -> None:
+def _finish_normal(room: Room, *, reason: str = "normal") -> None:
     game = room.game
     assert game is not None
     n = len(room.seats)
@@ -236,6 +237,7 @@ def _finish_normal(room: Room) -> None:
         seat.is_ready = False
         seat.rematch_vote = RematchVote.NONE
     room.state = RoomState.FINISHED
+    room.last_finish_reason = reason
 
 
 def _require_in_progress(room: Room) -> None:
@@ -277,7 +279,7 @@ def forfeit_seat(room: Room, seat_index: int) -> None:
     game.forfeit_order.append(seat_index)
 
     if sum(1 for s in room.seats.values() if s.hand) < 2:
-        _finish_normal(room)
+        _finish_normal(room, reason="players_left")
         return
 
     if game.current_seat == seat_index:

@@ -90,6 +90,7 @@ class Room:
     game: Game | None = None
     game_number: int = 1
     previous_winner: int | None = None
+    last_finish_reason: str | None = None
     created_at: float = field(default_factory=time.time)
     last_activity_at: float = field(default_factory=time.time)
 
