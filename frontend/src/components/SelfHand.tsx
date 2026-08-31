@@ -26,6 +26,15 @@ export default function SelfHand({ hand, selectedCardIds }: SelfHandProps) {
     hand.map((id) => ({ id, status: "idle" })),
   );
   const prevHandRef = useRef<CardId[]>(hand);
+  // Keyed by card id, not by effect invocation: the backend resends hand:sync
+  // on every mutation (including ones that don't change this hand), which
+  // gives `hand` a new array reference each time. React unconditionally runs
+  // the previous effect's cleanup on such a re-run, so a setTimeout returned
+  // as that cleanup would get cancelled before its own reschedule logic ever
+  // ran -- permanently stranding the leaving card mid-animation (invisible,
+  // disabled, never removed). Tracking timers here instead of via effect
+  // cleanup makes removal robust to any number of redundant re-renders.
+  const leavingTimersRef = useRef<Map<CardId, ReturnType<typeof setTimeout>>>(new Map());
 
   useEffect(() => {
     const prevHand = prevHandRef.current;
@@ -42,13 +51,23 @@ export default function SelfHand({ hand, selectedCardIds }: SelfHandProps) {
       return [...kept, ...entering];
     });
 
-    if (removed.length > 0) {
+    for (const id of removed) {
+      if (leavingTimersRef.current.has(id)) continue;
       const timer = setTimeout(() => {
-        setDisplayCards((current) => current.filter((c) => c.status !== "leaving"));
+        leavingTimersRef.current.delete(id);
+        setDisplayCards((current) => current.filter((c) => c.id !== id));
       }, LEAVE_MS);
-      return () => clearTimeout(timer);
+      leavingTimersRef.current.set(id, timer);
     }
   }, [hand]);
+
+  useEffect(() => {
+    const timers = leavingTimersRef.current;
+    return () => {
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
+  }, []);
 
   useEffect(() => {
     if (!displayCards.some((c) => c.status === "entering")) return;
