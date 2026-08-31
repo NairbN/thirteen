@@ -24,6 +24,7 @@ describe("Home", () => {
     pushMock.mockReset();
     createRoomMock.mockReset();
     window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it("renders the landing screen", () => {

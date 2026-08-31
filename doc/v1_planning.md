@@ -8,7 +8,7 @@ Rules of play live in [`rules.md`](./rules.md). This document covers scope, stat
 
 - Sign in as guest
 - Custom username, custom player icon
-- Persist username, icon, and session token in `localStorage`
+- Persist username and icon in `localStorage`; the active session token in `sessionStorage` (per-tab — see "Reconnect flow")
 
 **Lobby**
 
@@ -307,7 +307,7 @@ All events are namespaced by `:`. Every client→server event takes an ack callb
 
 ### Reconnect flow
 
-1. Client stores `{ code, sessionToken }` in `localStorage` on join.
+1. Client stores `{ code, sessionToken }` in `sessionStorage` (not `localStorage`) on join — scoped per browser tab, not per browser profile. Sharing it across tabs would mean opening a share link in a second tab of the same browser silently reconnects as whichever seat that browser already holds, with no way to join as a second player short of a different browser/incognito window. `sessionStorage` still survives a reload/reconnect within the same tab (the actual point of this flow), it just doesn't leak into a fresh one.
 2. On load or socket reconnect, if a token exists, emit `room:rejoin`.
 3. Server looks up the room by code, matches `sessionToken` to a seat, rebinds the socket, sets `connection = connected`.
 4. Server emits `hand:sync` to that socket and `state:sync` to the room.
