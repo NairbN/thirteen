@@ -34,10 +34,10 @@ Two routes, matching Next.js App Router:
 
 ### Lobby (`/room/[code]`, `state: waiting`)
 
-- Seat list (`SeatCard` per occupied seat): avatar/icon, username, host badge, ready toggle/indicator.
-- Empty seats shown as open slots up to `MAX_SEATS`.
-- `ShareLinkBox` — copyable room link.
-- "Ready" toggle for the local seat; host sees implicit start-when-all-ready (no separate "start" button — the `READY` transition in `v1_planning.md` fires automatically once all seats are ready and seat count is in range).
+- **Character-select layout (revised)**, matching the pre-game lobby convention from games like Fortnite/PUBG: occupied seats render as larger, full-body-scale standing avatar characters arranged across the jungle floor (not a compact icon-plus-row list), each with a nameplate showing username, host badge, and ready state beneath it. Empty seats up to `MAX_SEATS` show as an obviously-open slot (dashed outline placeholder, scaled to match) rather than being omitted.
+- **In-lobby outfit editing:** the local player's own character in the lineup has a clear "Edit Outfit" affordance that opens the same arrow-based avatar builder described under "Avatars" above (extract it into a shared component rather than duplicating it between the landing screen and here). Changes apply live via `player:update` (legal in `waiting`, per the Socket Contract in `v1_planning.md`) — the character updates immediately for everyone in the room, not just the editor, which is the point of doing this here instead of only pre-join.
+- `ShareLinkBox` — copyable room link. Unchanged.
+- "Ready" toggle for the local seat; host sees implicit start-when-all-ready (no separate "start" button — the `READY` transition in `v1_planning.md` fires automatically once all seats are ready and seat count is in range). Unchanged.
 
 ### Table (`/room/[code]`, `state: in_progress`, also covers the brief `starting` transition)
 
@@ -68,7 +68,8 @@ App
 ├── (/) LandingScreen
 ├── (/room/[code]) RoomScreen        — switches on PublicState.state
 │   ├── LobbyScreen (state: waiting)
-│   │   ├── SeatCard × N
+│   │   ├── SeatCard × N              — standing character scale; local seat gets the outfit editor
+│   │   │   └── AvatarBuilder         — opened by the local seat's "Edit Outfit"; shared with LandingScreen
 │   │   └── ShareLinkBox
 │   ├── TableScreen (state: starting | in_progress)
 │   │   ├── OpponentSeat × (N-1)     — positioned via computed oval coordinates
