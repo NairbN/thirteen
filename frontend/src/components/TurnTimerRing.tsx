@@ -30,20 +30,13 @@ export default function TurnTimerRing({ turnDeadline, size = 64 }: TurnTimerRing
       role="img"
       aria-label="Turn timer"
     >
+      <circle cx={size / 2} cy={size / 2} r={radius} className="stroke-[#fffaf0]/50" strokeWidth={5} fill="none" />
       <circle
         cx={size / 2}
         cy={size / 2}
         r={radius}
-        className="stroke-zinc-200 dark:stroke-zinc-700"
-        strokeWidth={4}
-        fill="none"
-      />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        className={fraction < 0.25 ? "stroke-rose-500" : "stroke-sky-500"}
-        strokeWidth={4}
+        className={fraction < 0.25 ? "stroke-rose-500" : "stroke-amber-300"}
+        strokeWidth={5}
         fill="none"
         strokeDasharray={circumference}
         strokeDashoffset={offset}

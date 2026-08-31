@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getSocketClient } from "@/lib/socket/client";
+import { buttonClass } from "@/lib/buttonStyles";
 import type { Card as CardId } from "@/lib/rules-engine/cards";
 import type { Combo } from "@/lib/rules-engine/combos";
 import { evaluateSelection } from "@/lib/selectionLegality";
@@ -47,23 +48,13 @@ export default function ActionBar({ phase, pile, isMyTurn, selectedCardIds }: Ac
   }
 
   return (
-    <div className="absolute bottom-4 right-4 flex gap-2">
+    <div className="absolute bottom-4 right-4 z-20 flex gap-3">
       {phase !== "awaiting_lead" && (
-        <button
-          type="button"
-          onClick={handlePass}
-          disabled={!canPass}
-          className="rounded bg-zinc-700 px-5 py-2.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
+        <button type="button" onClick={handlePass} disabled={!canPass} className={buttonClass("neutral", "lg")}>
           Pass
         </button>
       )}
-      <button
-        type="button"
-        onClick={handlePlay}
-        disabled={!canPlay}
-        className="rounded bg-emerald-600 px-5 py-2.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-      >
+      <button type="button" onClick={handlePlay} disabled={!canPlay} className={buttonClass("primary", "lg")}>
         Play
       </button>
     </div>

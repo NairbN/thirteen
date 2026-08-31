@@ -16,8 +16,8 @@ function ToastRow({ toast }: { toast: ToastItem }) {
   return (
     <div
       role="status"
-      className={`rounded-md px-4 py-2 text-sm shadow-md ${
-        toast.variant === "error" ? "bg-rose-600 text-white" : "bg-zinc-800 text-white"
+      className={`rounded-2xl border-[3px] border-ink px-4 py-2 text-sm font-semibold shadow-[0_4px_0_rgba(43,24,16,0.4)] ${
+        toast.variant === "error" ? "bg-rose-400 text-white" : "bg-amber-200 text-ink"
       }`}
     >
       {toast.message}

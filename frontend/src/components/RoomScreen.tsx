@@ -32,8 +32,8 @@ export default function RoomScreen({ code }: RoomScreenProps) {
 
   if (!belongsToThisRoom || !publicState) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-zinc-600 dark:text-zinc-400">Connecting…</p>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--background)]">
+        <p className="font-display font-semibold text-ink">Connecting…</p>
       </main>
     );
   }
@@ -48,8 +48,8 @@ export default function RoomScreen({ code }: RoomScreenProps) {
       return <EndScreen />;
     case "abandoned":
       return (
-        <main className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 dark:bg-black">
-          <p className="text-zinc-600 dark:text-zinc-400">This room no longer exists.</p>
+        <main className="flex min-h-screen flex-col items-center justify-center bg-[var(--background)]">
+          <p className="font-display font-semibold text-ink">This room no longer exists.</p>
         </main>
       );
     default:

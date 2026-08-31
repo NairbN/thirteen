@@ -2,7 +2,9 @@
 
 import { getSocketClient } from "@/lib/socket/client";
 import { MAX_SEATS } from "@/lib/constants";
+import { buttonClass } from "@/lib/buttonStyles";
 import { useGameStore } from "@/store/gameStore";
+import ExitGameButton from "./ExitGameButton";
 import SeatCard, { OpenSeatCard } from "./SeatCard";
 import ShareLinkBox from "./ShareLinkBox";
 
@@ -21,10 +23,11 @@ export default function LobbyScreen() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col gap-6 px-4 py-10">
+    <main className="relative mx-auto flex min-h-screen max-w-lg flex-col gap-6 px-4 py-10">
+      <ExitGameButton />
       <div className="text-center">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Lobby</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Room {publicState.code}</p>
+        <h1 className="font-display text-3xl font-bold text-ink">Lobby</h1>
+        <p className="mt-1 text-sm text-stone-500">Room {publicState.code}</p>
       </div>
 
       <ShareLinkBox code={publicState.code} />
@@ -42,9 +45,7 @@ export default function LobbyScreen() {
         <button
           type="button"
           onClick={toggleReady}
-          className={`rounded px-4 py-3 font-semibold text-white ${
-            mySeat.isReady ? "bg-zinc-500" : "bg-emerald-600"
-          }`}
+          className={buttonClass(mySeat.isReady ? "muted" : "primary", "lg")}
         >
           {mySeat.isReady ? "Not ready" : "Ready"}
         </button>

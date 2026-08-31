@@ -1,4 +1,6 @@
+import { parseAvatarConfig } from "@/lib/avatars";
 import type { PublicSeat } from "@/lib/socket/types";
+import AvatarRenderer from "./AvatarRenderer";
 
 interface ScoreboardTableProps {
   seats: PublicSeat[];
@@ -14,15 +16,19 @@ export default function ScoreboardTable({ seats }: ScoreboardTableProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Standings</h2>
-      <table className="w-full overflow-hidden rounded-md bg-white text-sm dark:bg-zinc-900">
+      <h2 className="text-lg font-semibold text-ink">Standings</h2>
+      <table className="w-full overflow-hidden rounded-2xl border-[3px] border-ink bg-[#fffaf0] text-sm shadow-[0_4px_0_rgba(43,24,16,0.35)]">
         <tbody>
           {ranked.map((seat, i) => (
-            <tr key={seat.seatIndex} className="border-b border-zinc-100 last:border-0 dark:border-zinc-800">
-              <td className="px-3 py-2 font-semibold text-zinc-500 dark:text-zinc-400">#{positions[i]}</td>
-              <td className="px-3 py-2">{seat.icon}</td>
-              <td className="px-3 py-2 text-zinc-900 dark:text-zinc-50">{seat.username}</td>
-              <td className="px-3 py-2 text-right tabular-nums text-zinc-900 dark:text-zinc-50">{seat.score}</td>
+            <tr key={seat.seatIndex} className="border-b-2 border-amber-100 last:border-0">
+              <td className="px-3 py-2 font-display font-semibold text-stone-500">#{positions[i]}</td>
+              <td className="px-3 py-2">
+                <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-ink bg-amber-100">
+                  <AvatarRenderer config={parseAvatarConfig(seat.icon)} size="compact" className="h-10 w-10" />
+                </span>
+              </td>
+              <td className="px-3 py-2 text-ink">{seat.username}</td>
+              <td className="px-3 py-2 text-right tabular-nums font-semibold text-ink">{seat.score}</td>
             </tr>
           ))}
         </tbody>

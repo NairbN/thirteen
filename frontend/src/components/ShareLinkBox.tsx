@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { buttonClass } from "@/lib/buttonStyles";
 
 interface ShareLinkBoxProps {
   code: string;
@@ -21,13 +22,9 @@ export default function ShareLinkBox({ code }: ShareLinkBoxProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <span className="flex-1 truncate text-sm text-zinc-600 dark:text-zinc-400">{link}</span>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="rounded bg-sky-600 px-3 py-1.5 text-sm font-semibold text-white"
-      >
+    <div className="flex items-center gap-2 rounded-2xl border-[3px] border-ink bg-[#fffaf0] px-4 py-3 shadow-[0_4px_0_rgba(43,24,16,0.35)]">
+      <span className="flex-1 truncate text-sm text-stone-600">{link}</span>
+      <button type="button" onClick={handleCopy} className={buttonClass("secondary", "sm")}>
         {copied ? "Copied" : "Copy"}
       </button>
     </div>

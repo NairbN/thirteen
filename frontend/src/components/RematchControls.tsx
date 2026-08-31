@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getSocketClient } from "@/lib/socket/client";
 import { REMATCH_TIMEOUT_MS } from "@/lib/constants";
+import { buttonClass } from "@/lib/buttonStyles";
 import type { PublicSeat } from "@/lib/socket/types";
 
 interface RematchControlsProps {
@@ -31,24 +32,20 @@ export default function RematchControls({ mySeat, gameNumber }: RematchControlsP
   if (!mySeat) return null;
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">Rematch window closes in {remainingS}s</p>
-      <div className="flex gap-2">
+    <div className="flex flex-col items-center gap-3 rounded-2xl border-[3px] border-ink bg-[#fffaf0] p-4 shadow-[0_4px_0_rgba(43,24,16,0.35)]">
+      <p className="text-sm text-stone-500">Rematch window closes in {remainingS}s</p>
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={() => vote(true)}
-          className={`rounded px-4 py-2 font-semibold text-white ${
-            mySeat.rematchVote === "accept" ? "bg-emerald-700" : "bg-emerald-600"
-          }`}
+          className={buttonClass(mySeat.rematchVote === "accept" ? "primary" : "secondary")}
         >
           Accept
         </button>
         <button
           type="button"
           onClick={() => vote(false)}
-          className={`rounded px-4 py-2 font-semibold text-white ${
-            mySeat.rematchVote === "decline" ? "bg-zinc-600" : "bg-zinc-500"
-          }`}
+          className={buttonClass(mySeat.rematchVote === "decline" ? "muted" : "neutral")}
         >
           Decline
         </button>

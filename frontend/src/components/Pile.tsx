@@ -69,11 +69,15 @@ export default function Pile({ pile, lastPlayerToPlay, seats }: PileProps) {
             ))}
           </div>
           {lastPlayer && (
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">played by {lastPlayer.username}</span>
+            <span className="rounded-full bg-[#fffaf0]/90 px-2 py-0.5 text-xs font-semibold text-ink">
+              played by {lastPlayer.username}
+            </span>
           )}
         </>
       ) : (
-        <span className="text-sm text-zinc-400 dark:text-zinc-600">Pile empty</span>
+        <span className="rounded-full bg-[#fffaf0]/70 px-3 py-1 text-sm font-semibold text-stone-500">
+          Pile empty
+        </span>
       )}
     </div>
   );
