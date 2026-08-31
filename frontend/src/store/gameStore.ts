@@ -26,6 +26,10 @@ function nextToastId(): string {
   return `toast-${toastSeq}`;
 }
 
+// Caps concurrent toasts so a burst of game:played/game:passed events can
+// never outpace auto-dismiss and stack up over primary screen content.
+const MAX_CONCURRENT_TOASTS = 3;
+
 export interface GameStoreState {
   roomCode: string | null;
   sessionToken: string | null;
@@ -132,7 +136,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   clearSelection: () => set({ selectedCardIds: [] }),
 
-  pushToast: (toast) => set((s) => ({ toasts: [...s.toasts, { ...toast, id: nextToastId() }] })),
+  pushToast: (toast) =>
+    set((s) => ({
+      toasts: [...s.toasts, { ...toast, id: nextToastId() }].slice(-MAX_CONCURRENT_TOASTS),
+    })),
   dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
   resetRoom: () =>

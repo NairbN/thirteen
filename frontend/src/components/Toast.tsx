@@ -31,7 +31,7 @@ export default function Toast() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex flex-col items-center gap-2">
+    <div className="pointer-events-none fixed bottom-4 left-4 z-50 flex max-w-xs flex-col-reverse items-start gap-2">
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">
           <ToastRow toast={toast} />
