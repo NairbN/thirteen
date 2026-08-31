@@ -90,6 +90,14 @@ export class SocketClient {
       useGameStore.getState().setSession(session.code, session.sessionToken, seatIndex);
     } else {
       clearStoredSession();
+      useGameStore.getState().pushToast({
+        variant: "error",
+        message:
+          res.code === "ROOM_NOT_FOUND"
+            ? "Your previous lobby is no longer available -- everyone left."
+            : "Couldn't rejoin your previous lobby.",
+        code: res.code,
+      });
     }
     useGameStore.getState().setSessionRestore("resolved");
   }
