@@ -1,0 +1,53 @@
+{
+  "$comment": "Shared test fixture for the combo engine, derived from doc/rules.md and doc/v1_planning.md. Consumed by both the backend (pytest, authoritative Python implementation) and frontend (vitest, advisory TS implementation) rules-engine test suites. Card notation: RANK+SUIT, rank in [3,4,5,6,7,8,9,10,J,Q,K,A,2], suit in [S,C,D,H] with S<C<D<H. Do not edit case data without updating both consumers.",
+
+  "parseCombo": {
+    "accept": [
+      { "cards": ["3S"], "type": "single", "length": 1, "high": "3S" },
+      { "cards": ["7S", "7H"], "type": "pair", "length": 2, "high": "7H" },
+      { "cards": ["9S", "9C", "9D"], "type": "triple", "length": 3, "high": "9D" },
+      { "cards": ["3S", "4C", "5D"], "type": "straight", "length": 3, "high": "5D" },
+      { "cards": ["10S", "JC", "QD", "KH", "AS"], "type": "straight", "length": 5, "high": "AS" },
+      { "cards": ["5S", "5C", "5D", "5H"], "type": "quad", "length": 4, "high": "5H", "isBomb": true },
+      { "cards": ["3S", "3C", "4S", "4C", "5S", "5C"], "type": "consecutive_pairs", "length": 3, "high": "5C", "isBomb": true },
+      { "cards": ["3S", "3C", "4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C", "8S", "8C"], "type": "consecutive_pairs", "length": 6, "high": "8C", "isBomb": true }
+    ],
+    "reject": [
+      { "cards": ["3S", "4C"], "reason": "2-card straight — below minimum" },
+      { "cards": ["3S", "4C", "6D"], "reason": "not consecutive" },
+      { "cards": ["KS", "AC", "2D"], "reason": "2 in a straight" },
+      { "cards": ["QS", "KC", "AD", "3H"], "reason": "wrap-around" },
+      { "cards": ["AS", "AC", "2S", "2C", "3S", "3C"], "reason": "2 in consecutive pairs + wrap" },
+      { "cards": ["3S", "3C", "4S", "4C"], "reason": "only 2 pairs — below minimum" },
+      { "cards": ["3S", "3C", "5S", "5C", "6S", "6C"], "reason": "pair ranks not consecutive" },
+      { "cards": ["7S", "7C", "8D"], "reason": "no valid shape" },
+      { "cards": ["3S", "3S"], "reason": "duplicate card" }
+    ]
+  },
+
+  "beats": [
+    { "pile": ["7S"], "candidate": ["7H"], "result": true, "reason": "suit tiebreak" },
+    { "pile": ["7H"], "candidate": ["7S"], "result": false, "reason": "lower suit" },
+    { "pile": ["7S", "7C"], "candidate": ["7D", "7H"], "result": true, "reason": "pair suit tiebreak" },
+    { "pile": ["3S", "4C", "5D"], "candidate": ["4S", "5C", "6D"], "result": true, "reason": "higher straight, same length" },
+    { "pile": ["3S", "4C", "5D"], "candidate": ["4S", "5C", "6D", "7H"], "result": false, "reason": "length mismatch" },
+    { "pile": ["9S", "9C"], "candidate": ["10S", "JC", "QD"], "result": false, "reason": "type mismatch" },
+    { "pile": ["2S"], "candidate": ["5S", "5C", "5D", "5H"], "result": true, "reason": "quad chops a single 2" },
+    { "pile": ["2S"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C"], "result": true, "reason": "3 pairs chops a single 2" },
+    { "pile": ["2S", "2C"], "candidate": ["5S", "5C", "5D", "5H"], "result": false, "reason": "quad cannot chop a pair of 2s" },
+    { "pile": ["2S", "2C"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C", "6S", "6C"], "result": true, "reason": "exact chop — 4 consecutive pairs" },
+    { "pile": ["2S", "2C"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C"], "result": false, "reason": "chop is exact, not 'at least' — 5 pairs is too many" },
+    { "pile": ["2S", "2C"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C"], "result": false, "reason": "too small — 3 pairs" },
+    { "pile": ["2S", "2C", "2D"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C", "6S", "6C"], "result": false, "reason": "needs exactly 5 pairs" },
+    { "pile": ["2S", "2C", "2D"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C"], "result": true, "reason": "exact chop — 5 consecutive pairs" },
+    { "pile": ["AS"], "candidate": ["5S", "5C", "5D", "5H"], "result": false, "reason": "bombs only chop 2s" },
+    { "pile": ["5S", "5C", "5D", "5H"], "candidate": ["9S", "9C", "9D", "9H"], "result": true, "reason": "quad beats lower quad" },
+    { "pile": ["9S", "9C", "9D", "9H"], "candidate": ["5S", "5C", "5D", "5H"], "result": false, "reason": "lower quad" },
+    { "pile": ["AS", "AC", "AD", "AH"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C"], "result": true, "reason": "3-pair run beats any quad" },
+    { "pile": ["3S", "3C", "4S", "4C", "5S", "5C"], "candidate": ["AS", "AC", "AD", "AH"], "result": false, "reason": "quad cannot answer a run" },
+    { "pile": ["3S", "3C", "4S", "4C", "5S", "5C"], "candidate": ["4S", "4C", "5S", "5C", "6S", "6C"], "result": true, "reason": "higher 3-pair run" },
+    { "pile": ["3S", "3C", "4S", "4C", "5S", "5C"], "candidate": ["4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C"], "result": false, "reason": "runs never cross length" },
+    { "pile": ["4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C"], "candidate": ["5S", "5C", "6S", "6C", "7S", "7C", "8S", "8C"], "result": true, "reason": "higher 4-pair run" },
+    { "pile": ["4S", "4C", "5S", "5C", "6S", "6C", "7S", "7C"], "candidate": ["3S", "3C", "4S", "4C", "5S", "5C"], "result": false, "reason": "3-pair run cannot answer a 4-pair run" }
+  ]
+}
