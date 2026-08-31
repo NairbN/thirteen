@@ -2,11 +2,16 @@
 
 Companion to [`v1_planning.md`](./v1_planning.md) (architecture/contract) and [`rules.md`](./rules.md) (game rules). This document covers screens, layout, and client-side interaction — nothing here changes server authority; see "Authority & Hidden Information" in `v1_planning.md`.
 
-## Direction
+## Direction (revised)
 
-- **Visual style:** clean & minimal — flat design, simple shapes, restrained palette, Tailwind utility classes. No card art assets; cards are rendered as text/SVG (rank + suit glyph, colored by suit), not images.
-- **Primary device target:** desktop-first, responsive down. Card games read better with horizontal space; the table layout compresses toward vertical on narrow viewports rather than being redesigned per-breakpoint.
-- **Animation budget:** CSS-transition-only movement for (1) deal — cards sliding from a deck point into the hand fan, (2) play — selected cards sliding from hand to pile, (3) round clear — pile cards fading/sliding out. No physics, no confetti, no 3D flips. Matches the "Animations beyond basic card movement" non-goal in `v1_planning.md`.
+- **Visual style: cartoony jungle.** Superseded the original "clean & minimal" direction per user request. Bright saturated palette, thick dark rounded outlines on every shape (cards, buttons, avatars), soft drop shadows for depth, bouncy/playful hover and press states. Still no external image assets — everything (cards, avatars, background) is built from inline SVG/CSS, just with a much more illustrated, less flat character now. A friendly rounded display font for headings; body text stays legible/readable.
+- **Table background: jungle floor.** Replaces the flat green felt. A leaf/vine border framing the play area, a warm dirt-or-wood-plank ground fill in the middle. Static (no parallax/animation) — this is set dressing, not a scene.
+- **Cards:** rounded corners, thick outline, a subtle playful shadow. Rank/suit glyphs stay the primary content (still no card-face imagery), just styled to match the cartoony language (chunkier numerals, maybe a slightly bouncy selected/hover state consistent with the existing animation budget below).
+- **Avatars: customizable cartoony animal.** Replaces the single-emoji icon picker. Four independent choices, each from a small fixed set: **animal** (base body/head shape — pick ~6, e.g. bear/cat/fox/panda/tiger/bunny), **hat**, **glasses**, **shirt** (each ~5 options including "none" where it makes sense). Composited as one layered SVG. Full detail at landing-screen/lobby-seat size; a simplified (fewer visible details, but still on-model) version is fine at the small opponent-seat avatar size on the table — legibility at a glance matters more than full fidelity there.
+  - **Wire format:** the socket contract's `icon: string` field (see `v1_planning.md`) is unchanged in shape and is still fully opaque to the server — it never validates or interprets it. The client now JSON-encodes the four choices into that same string field, e.g. `{"animal":"tiger","hat":"cap","glasses":"round","shirt":"red"}`. No backend change needed. Old single-emoji values are not migrated — this is fine given V1 has no persistence across server restarts.
+- **Primary device target:** desktop-first, responsive down. Unchanged.
+- **Animation budget:** CSS-transition-only movement for (1) deal — cards sliding from a deck point into the hand fan, (2) play — selected cards sliding from hand to pile, (3) round clear — pile cards fading/sliding out. No physics, no confetti, no 3D flips. Matches the "Animations beyond basic card movement" non-goal in `v1_planning.md`. The cartoony restyle should stay within this budget — richer *look*, not more *motion*.
+- **Exit Game button:** every screen inside a room (`waiting`/`in_progress`/`finished`) needs a visible, clearly-labeled exit control that calls `room:leave` (forfeiting if mid-game, per the existing contract) and returns to `/`. This closes a gap in the original component tree, which never surfaced one.
 
 ## Routing
 
