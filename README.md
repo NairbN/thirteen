@@ -53,8 +53,10 @@ GitHub Actions (`.github/workflows/ci.yml`) lints, type-checks, and tests both f
 
 ## Deploys
 
-| Service  | Target   | Notes |
-| -------- | -------- | ----- |
-| Frontend | Vercel   | Native Next.js build, not the Docker image |
-| Backend  | Railway  | Long-running process — required for in-memory game rooms and WebSocket connections |
-| Database | Supabase | Provisioned for future use; unused by V1 |
+| Service  | Target   | Live URL | Notes |
+| -------- | -------- | -------- | ----- |
+| Frontend | Vercel   | https://thirteen-gilt.vercel.app | Native Next.js build, not the Docker image. Root directory: `frontend`. |
+| Backend  | Railway  | https://backend-production-5e0e.up.railway.app | Long-running process — required for in-memory game rooms and WebSocket connections. Root directory: `backend`. |
+| Database | Supabase | —        | Provisioned for future use; unused by V1 |
+
+Both auto-deploy on push to `main`. See [`.claude/skills/run/SKILL.md`](./.claude/skills/run/SKILL.md) for deploy commands, local dev, and the two-browser Playwright pattern for verifying multiplayer flows.
