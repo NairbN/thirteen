@@ -5,6 +5,7 @@ import { MAX_SEATS } from "@/lib/constants";
 import { buttonClass } from "@/lib/buttonStyles";
 import { useGameStore } from "@/store/gameStore";
 import ExitGameButton from "./ExitGameButton";
+import JungleBackdrop from "./JungleBackdrop";
 import SeatCard, { OpenSeatCard } from "./SeatCard";
 import ShareLinkBox from "./ShareLinkBox";
 
@@ -24,6 +25,7 @@ export default function LobbyScreen() {
 
   return (
     <main className="relative mx-auto flex min-h-screen max-w-lg flex-col gap-6 px-4 py-10">
+      <JungleBackdrop />
       <ExitGameButton />
       <div className="text-center">
         <h1 className="font-display text-3xl font-bold text-ink">Lobby</h1>

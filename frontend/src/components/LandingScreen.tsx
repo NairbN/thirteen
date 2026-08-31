@@ -11,11 +11,7 @@ import {
   SHIRT_OPTIONS,
   parseAvatarConfig,
   serializeAvatarConfig,
-  type AnimalOption,
   type AvatarConfig,
-  type GlassesOption,
-  type HatOption,
-  type ShirtOption,
 } from "@/lib/avatars";
 import { getStoredProfile, setStoredProfile } from "@/lib/storage";
 import { useGameStore } from "@/store/gameStore";
@@ -25,36 +21,36 @@ function titleCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-interface SlotRowProps<T extends string> {
+interface ArrowRowProps<T extends string> {
   label: string;
   options: readonly T[];
   value: T;
   onChange: (value: T) => void;
-  previewFor: (option: T) => AvatarConfig;
+  topPercent: number;
 }
 
-function SlotRow<T extends string>({ label, options, value, onChange, previewFor }: SlotRowProps<T>) {
+// Rows sit at a fixed vertical percentage of the preview box (see
+// AvatarRenderer's "full" viewBox, `0 -18 100 130`) so each arrow pair reads
+// as physically attached to the part of the avatar it edits, per
+// doc/ui_ux.md's "Builder UI (revised)".
+function ArrowRow<T extends string>({ label, options, value, onChange, topPercent }: ArrowRowProps<T>) {
+  const step = (direction: 1 | -1) => {
+    const index = options.indexOf(value);
+    const next = options[(index + direction + options.length) % options.length];
+    onChange(next);
+  };
+
+  const arrowClass =
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-[3px] border-ink bg-[#fffaf0] font-display text-lg font-bold text-ink shadow-[0_3px_0_rgba(43,24,16,0.35)] transition-transform duration-150 ease-out hover:scale-105 active:translate-y-[2px] active:shadow-none";
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="font-display text-sm font-semibold text-ink">{label}</span>
-      <div className="flex flex-wrap gap-2">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => onChange(option)}
-            aria-pressed={value === option}
-            title={titleCase(option)}
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl border-[3px] bg-[#fffaf0] transition-all duration-150 ease-out hover:-translate-y-0.5 ${
-              value === option
-                ? "border-ink shadow-[0_3px_0_#e8990c] ring-2 ring-amber-400"
-                : "border-stone-300 shadow-[0_3px_0_rgba(43,24,16,0.25)]"
-            }`}
-          >
-            <AvatarRenderer config={previewFor(option)} size="compact" className="h-14 w-14" />
-          </button>
-        ))}
-      </div>
+    <div className="absolute inset-x-0 flex -translate-y-1/2 items-center justify-between" style={{ top: `${topPercent}%` }}>
+      <button type="button" onClick={() => step(-1)} aria-label={`Previous ${label.toLowerCase()}`} className={arrowClass}>
+        ‹
+      </button>
+      <button type="button" onClick={() => step(1)} aria-label={`Next ${label.toLowerCase()}`} className={arrowClass}>
+        ›
+      </button>
     </div>
   );
 }
@@ -140,42 +136,45 @@ export default function LandingScreen() {
           />
         </label>
 
-        <div className="flex flex-col gap-3 rounded-2xl border-[3px] border-dashed border-stone-300 p-3">
-          <div className="flex items-center gap-3">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border-[3px] border-ink bg-amber-100">
-              <AvatarRenderer config={avatar} size="full" className="h-24 w-24" />
+        <div className="flex flex-col items-center gap-2 rounded-2xl border-[3px] border-dashed border-stone-300 p-3">
+          <p className="text-center text-sm text-stone-500">Use the arrows to build your critter.</p>
+          <div className="relative h-80 w-full max-w-[18rem]">
+            <div className="flex h-full items-center justify-center">
+              <AvatarRenderer config={avatar} size="full" className="h-full w-auto" />
             </div>
-            <p className="text-sm text-stone-500">Build your critter — pick an animal, then any hat, glasses, and shirt.</p>
+            <ArrowRow
+              label="Hat"
+              options={HAT_OPTIONS}
+              value={avatar.hat}
+              onChange={(hat) => setAvatar((c) => ({ ...c, hat }))}
+              topPercent={18}
+            />
+            <ArrowRow
+              label="Glasses"
+              options={GLASSES_OPTIONS}
+              value={avatar.glasses}
+              onChange={(glasses) => setAvatar((c) => ({ ...c, glasses }))}
+              topPercent={48}
+            />
+            <ArrowRow
+              label="Animal"
+              options={ANIMAL_OPTIONS}
+              value={avatar.animal}
+              onChange={(animal) => setAvatar((c) => ({ ...c, animal }))}
+              topPercent={63}
+            />
+            <ArrowRow
+              label="Shirt"
+              options={SHIRT_OPTIONS}
+              value={avatar.shirt}
+              onChange={(shirt) => setAvatar((c) => ({ ...c, shirt }))}
+              topPercent={83}
+            />
           </div>
-
-          <SlotRow<AnimalOption>
-            label="Animal"
-            options={ANIMAL_OPTIONS}
-            value={avatar.animal}
-            onChange={(animal) => setAvatar((c) => ({ ...c, animal }))}
-            previewFor={(animal) => ({ ...avatar, animal })}
-          />
-          <SlotRow<HatOption>
-            label="Hat"
-            options={HAT_OPTIONS}
-            value={avatar.hat}
-            onChange={(hat) => setAvatar((c) => ({ ...c, hat }))}
-            previewFor={(hat) => ({ ...avatar, hat })}
-          />
-          <SlotRow<GlassesOption>
-            label="Glasses"
-            options={GLASSES_OPTIONS}
-            value={avatar.glasses}
-            onChange={(glasses) => setAvatar((c) => ({ ...c, glasses }))}
-            previewFor={(glasses) => ({ ...avatar, glasses })}
-          />
-          <SlotRow<ShirtOption>
-            label="Shirt"
-            options={SHIRT_OPTIONS}
-            value={avatar.shirt}
-            onChange={(shirt) => setAvatar((c) => ({ ...c, shirt }))}
-            previewFor={(shirt) => ({ ...avatar, shirt })}
-          />
+          <p className="text-center text-xs font-semibold text-stone-500">
+            {titleCase(avatar.animal)} &middot; {titleCase(avatar.hat)} hat &middot; {titleCase(avatar.glasses)} glasses &middot;{" "}
+            {titleCase(avatar.shirt)} shirt
+          </p>
         </div>
 
         <button type="button" onClick={handleCreate} disabled={!canSubmit} className={buttonClass("primary", "lg")}>

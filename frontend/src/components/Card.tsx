@@ -18,6 +18,18 @@ const GLYPH_SIZE: Record<NonNullable<CardProps["size"]>, string> = {
   md: "text-4xl",
 };
 
+// A soft rounded-corner gloss blob in the top-left, echoing the shine on the
+// avatar heads — the same "sticker" cue used to sell the anime-cute art
+// language on a shape that otherwise has no room for a face.
+function CardShine() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute left-1.5 top-1.5 h-3.5 w-2 rotate-[-18deg] rounded-full bg-white/60"
+    />
+  );
+}
+
 export default function Card({ card, selected = false, onClick, size = "md" }: CardProps) {
   const { rank, glyph, isRed } = cardLabel(card);
   const interactive = Boolean(onClick);
@@ -29,7 +41,7 @@ export default function Card({ card, selected = false, onClick, size = "md" }: C
       disabled={!interactive}
       aria-pressed={interactive ? selected : undefined}
       aria-label={`${rank}${glyph}`}
-      className={`flex flex-col items-center justify-between rounded-2xl border-[3px] border-ink bg-[#fffaf0] p-1.5 font-display font-bold shadow-[0_4px_0_rgba(43,24,16,0.55)] transition-all duration-150 ease-out ${SIZE_CLASSES[size]} ${
+      className={`relative flex flex-col items-center justify-between overflow-hidden rounded-2xl border-[3px] border-ink bg-gradient-to-br from-white to-amber-50 p-1.5 font-display font-bold shadow-[0_4px_0_rgba(43,24,16,0.55)] transition-all duration-150 ease-out ${SIZE_CLASSES[size]} ${
         isRed ? "text-rose-600" : "text-ink"
       } ${
         selected
@@ -37,8 +49,9 @@ export default function Card({ card, selected = false, onClick, size = "md" }: C
           : ""
       } ${interactive ? "cursor-pointer hover:-translate-y-2 hover:-rotate-1 active:translate-y-0" : "cursor-default"}`}
     >
-      <span className="self-start leading-none">{rank}</span>
-      <span className={`leading-none ${GLYPH_SIZE[size]}`}>{glyph}</span>
+      <CardShine />
+      <span className="self-start leading-none [text-shadow:1px_1px_0_rgba(43,24,16,0.12)]">{rank}</span>
+      <span className={`leading-none drop-shadow-[1px_2px_0_rgba(43,24,16,0.15)] ${GLYPH_SIZE[size]}`}>{glyph}</span>
     </button>
   );
 }
@@ -46,17 +59,24 @@ export default function Card({ card, selected = false, onClick, size = "md" }: C
 export function CardBack({ size = "md" }: { size?: CardProps["size"] }) {
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl border-[3px] border-ink bg-emerald-500 shadow-[0_3px_0_rgba(43,24,16,0.55)] ${SIZE_CLASSES[size ?? "md"]}`}
+      className={`relative flex items-center justify-center overflow-hidden rounded-2xl border-[3px] border-ink bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_3px_0_rgba(43,24,16,0.55)] ${SIZE_CLASSES[size ?? "md"]}`}
       aria-hidden
     >
-      <svg viewBox="0 0 40 40" className="h-2/3 w-2/3 opacity-90">
+      <span className="pointer-events-none absolute left-2 top-1.5 h-3 w-1.5 rotate-[-18deg] rounded-full bg-white/35" />
+      <svg viewBox="0 0 40 40" className="h-2/3 w-2/3 opacity-95">
+        <circle cx={20} cy={20} r={11} fill="#2f9e5e" stroke="#2b1810" strokeWidth={1.5} />
         <path
-          d="M20 6 Q28 14 20 20 Q12 14 20 6 Z M20 20 Q28 26 20 34 Q12 26 20 20 Z"
+          d="M20 10 C24 14 24 18 20 21 C16 18 16 14 20 10 Z"
           fill="#ffd43b"
           stroke="#2b1810"
-          strokeWidth={1.5}
+          strokeWidth={1.3}
           strokeLinejoin="round"
         />
+        <circle cx={16.5} cy={17.5} r={1.6} fill="#2b1810" />
+        <circle cx={23.5} cy={17.5} r={1.6} fill="#2b1810" />
+        <circle cx={16.1} cy={17.1} r={0.5} fill="#fff" />
+        <circle cx={23.1} cy={17.1} r={0.5} fill="#fff" />
+        <path d="M18 24 Q20 26 22 24" fill="none" stroke="#2b1810" strokeWidth={1.1} strokeLinecap="round" />
       </svg>
     </div>
   );
